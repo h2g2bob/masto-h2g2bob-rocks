@@ -43,10 +43,12 @@ def iss_rss(date):
             if int(m.group(1)) >= 4:
                 m = re.compile(r"<description>(.*?)</description>", re.DOTALL).search(block)
                 assert m, block
-                return "\n".join(
-                    line.strip()
-                    for line in m.group(1).split("&lt;br/&gt;")
-                )
+                describe = m.group(1)
+                if " PM" in describe:
+                    return "\n".join(
+                        line.strip()
+                        for line in describe.split("&lt;br/&gt;")
+                    )
     return None
 
 def toot(msg):
