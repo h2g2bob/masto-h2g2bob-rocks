@@ -48,7 +48,7 @@ def iss_rss(date):
                     return "\n".join(
                         line.strip()
                         for line in describe.split("&lt;br/&gt;")
-                    )
+                    ).replace("&#176;", "°")
     return None
 
 def toot(msg):
