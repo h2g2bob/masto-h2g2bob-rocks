@@ -25,6 +25,7 @@ def weather(date, hour):
 def cloud_is_ok(date, hour):
     data = weather(date, hour)
     cloud = data["forecast"]["forecastday"][0]["hour"][0]["cloud"]
+    log(f"cloud={cloud!r}")
     return cloud <= 40
 
 def iss_rss(date):
@@ -52,9 +53,14 @@ def toot(msg):
     mastodon = Mastodon(access_token="spacestationsouthend_login_cred.secret")
     mastodon.toot(msg)
 
+def log(msg):
+    if environ.get("LOGLOG", ""):
+        print(msg)
+
 def main():
     date = datetime.date.today().isoformat()
     iss_description = iss_rss(date)
+    log(f"describe={iss_description!r}")
     if iss_description:
         if cloud_is_ok(date, 20):
             msg = f"You can see the #InternationalSpaceStation in #Southend tonight\n{iss_description}\n{ISS_URL}"
