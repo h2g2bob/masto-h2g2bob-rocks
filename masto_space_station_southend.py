@@ -15,20 +15,20 @@ def weather_api_key():
     with open("weatherapi.com.secret", "r", encoding="ascii") as secretf:
         return secretf.read().strip()
 
-def weather(date, hour):
+def weather(iso_date: str, hour: int):
     resp = requests.get(
-        f"http://api.weatherapi.com/v1/forecast.json?key={weather_api_key()}&q={LOCATE}&dt={date}&hour={hour}",
+        f"http://api.weatherapi.com/v1/forecast.json?key={weather_api_key()}&q={LOCATE}&dt={iso_date}&hour={hour}",
         timeout=60.0,
     )
     return resp.json()
 
-def cloud_is_ok(date, hour):
-    data = weather(date, hour)
+def cloud_is_ok(iso_date: str, hour: int):
+    data = weather(iso_date, hour)
     cloud = data["forecast"]["forecastday"][0]["hour"][0]["cloud"]
     log(f"cloud={cloud!r}")
     return cloud <= 40
 
-def iss_rss(date):
+def iss_rss(iso_date: str):
     resp = requests.get(
         f"https://spotthestation.nasa.gov/sightings/xml_files.cfm?filename={ISS_LOC}.xml",
         timeout=60.0,
@@ -37,7 +37,7 @@ def iss_rss(date):
         m = re.compile(r"<title>(.*?)</title>").search(block)
         assert m, block
         title = m.group(1)
-        if date in title:
+        if iso_date in title:
             m = re.compile(r"Duration: (\d+) minutes").search(block)
             assert m, block
             if int(m.group(1)) >= 4:
@@ -60,11 +60,11 @@ def log(msg):
         print(msg)
 
 def main():
-    date = datetime.date.today().isoformat()
-    iss_description = iss_rss(date)
+    iso_date = datetime.date.today().isoformat()
+    iss_description = iss_rss(iso_date)
     log(f"describe={iss_description!r}")
     if iss_description:
-        if cloud_is_ok(date, 20):
+        if cloud_is_ok(iso_date, 20):
             msg = f"You can see the #InternationalSpaceStation in #Southend tonight\n{iss_description}\n{ISS_URL}"
             if environ.get("TOOT", ""):
                 toot(msg)
