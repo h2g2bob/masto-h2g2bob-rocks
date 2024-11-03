@@ -52,7 +52,7 @@ def iss_rss(iso_date: str):
     return None
 
 def toot(msg):
-    mastodon = Mastodon(access_token="spacestationsouthend_login_cred.secret")
+    mastodon = Mastodon(access_token="spacestationsouthend_mastodon_me_uk_login_cred.secret")
     mastodon.toot(msg)
 
 def log(msg):
